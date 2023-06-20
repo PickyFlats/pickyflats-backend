@@ -19,6 +19,9 @@ export class User {
 
   @Prop({ default: false })
   emailVerified: boolean;
+
+  @Prop({ required: false })
+  roles: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

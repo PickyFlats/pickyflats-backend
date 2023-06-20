@@ -1,7 +1,18 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { AuthGuard } from './auth.guard';
+import { Role } from './decorators/roles.decorator';
+import { Roles } from './schemas/roles.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -32,5 +43,15 @@ export class AuthController {
         error: 'REGISTER_FAILED',
       });
     }
+  }
+
+  //TEST: only roles with admin can access this controller
+  @Get(['/admin'])
+  @UseGuards(AuthGuard)
+  @Role(Roles.ADMIN)
+  async testAdmin(@Res() response) {
+    return response.json({
+      helo: 'world',
+    });
   }
 }

@@ -6,6 +6,8 @@ import { User } from '../users/schemas/user.schema';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { Roles } from './schemas/roles.schema';
 
 @Injectable()
 export class AuthService {
@@ -21,13 +23,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials!');
     }
 
-    const payload = { sub: user.id, name: user.name, email: user.email };
+    const payload = { userId: user.id, email: user.email, roles: user.roles };
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken };
   }
 
   async register(registerDto: RegisterDto) {
-    const { email, name, password } = registerDto;
+    const { email, firstName, lastName, password } = registerDto;
 
     // check for account exist or not
     const existUser = await this.userModel.findOne({ email });
@@ -36,18 +38,30 @@ export class AuthService {
     }
 
     const newUser = await this.userModel.create({
-      name,
+      firstName,
+      lastName,
       email,
       password: bcrypt.hashSync(password, 10),
+      roles: [Roles.USER], // by default role will be only `user` on creating new account
     });
 
     const payload = {
-      sub: newUser.id,
-      name: newUser.name,
+      userId: newUser.id,
       email: newUser.email,
+      roles: newUser.roles,
     };
     const accessToken = await this.jwtService.signAsync(payload);
 
     return { accessToken };
+  }
+
+  verifyToken(token: string): JwtPayload {
+    try {
+      const decoded = this.jwtService.verify(token);
+      return decoded;
+    } catch (error) {
+      // Token verification failed
+      return null;
+    }
   }
 }
