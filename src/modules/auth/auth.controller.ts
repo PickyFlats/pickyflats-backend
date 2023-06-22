@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Post,
+  Request,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -13,10 +14,16 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from './auth.guard';
 import { Role } from './decorators/roles.decorator';
 import { Roles } from './schemas/roles.schema';
+import { UsersService } from '../users/users.service';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+    private readonly profileService: ProfilesService,
+  ) {}
 
   @Post(['/login'])
   async userLogin(@Res() response, @Body() loginDto: LoginDto) {
@@ -53,5 +60,18 @@ export class AuthController {
     return response.json({
       helo: 'world',
     });
+  }
+
+  @Get(['/me'])
+  @UseGuards(AuthGuard)
+  async currentUser(@Request() req, @Res() response) {
+    const userId = req.user?.userId;
+
+    const user = await this.usersService.getUserById(userId);
+    // get user profile
+    // const profile = await this.profileService.getProfileByUserId(userId);
+    // console.log(profile);
+
+    return response.json(user);
   }
 }
