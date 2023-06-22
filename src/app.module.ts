@@ -10,6 +10,7 @@ import { ProfilesModule } from './modules/profiles/profiles.module';
 import { JwtMiddleware } from './common/middleware/jwt.middleware';
 import { ListingsModule } from './modules/listings/listings.module';
 import { ListingCostsModule } from './modules/listing-costs/listing-costs.module';
+import { FilesModule } from './modules/files/files.module';
 
 config();
 
@@ -17,7 +18,8 @@ const DB_URI = process.env.MONGODB_URI || '';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(DB_URI),
+    MongooseModule.forRoot(DB_URI, { dbName: 'pickyflats_dev' }),
+    FilesModule,
     UsersModule, // Import the UsersModule first for auth module
     ProfilesModule,
     AuthModule,

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Request,
+  Res,
+} from '@nestjs/common';
 import { ListingsService } from './listings.service';
 import { ListingDto } from './dto/listing.dto';
 import { ListingCostsService } from '../listing-costs/listing-costs.service';
@@ -24,9 +32,17 @@ export class ListingsController {
   }
 
   @Post(['/new'])
-  async createListing(@Res() response, @Body() listingDto: ListingDto) {
+  async createListing(
+    @Request() req,
+    @Res() response,
+    @Body() listingDto: ListingDto,
+  ) {
     try {
-      const newListing = await this.listingsService.createListing(listingDto);
+      const userId = req.user?.userId;
+      const newListing = await this.listingsService.createListing({
+        ...listingDto,
+        listedBy: userId,
+      });
       return response.json({ created: true });
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({

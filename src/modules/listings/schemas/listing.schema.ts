@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { FileSchema } from 'src/modules/files/schemas/file.schema';
 
 export type ListingDocument = HydratedDocument<Listing>;
 
@@ -29,8 +30,8 @@ export class Listing {
   @Prop({ default: 0 })
   kitchen: number;
 
-  @Prop()
-  gallery: string | object;
+  @Prop({ type: [{ type: FileSchema }] })
+  gallery: File[];
 
   // sellerInfo
   @Prop()
@@ -56,7 +57,7 @@ export class Listing {
 
   // flat meta datas
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
+  listedBy: Types.ObjectId;
   @Prop()
   liked_by: string[];
   @Prop()
