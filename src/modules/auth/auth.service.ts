@@ -8,12 +8,15 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { Roles } from './schemas/roles.schema';
+import { AccountType } from 'src/shared/user/account-type.enum';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     private jwtService: JwtService,
+    private profileService: ProfilesService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -43,7 +46,12 @@ export class AuthService {
       email,
       password: bcrypt.hashSync(password, 10),
       roles: [Roles.USER], // by default role will be only `user` on creating new account
+      //!FUTURE: registration based on requested account type
+      accountType: AccountType.TENANT, // default new user account type
     });
+
+    // create profile after creating new account
+    await this.profileService.createProfile(newUser.id);
 
     const payload = {
       userId: newUser.id,
