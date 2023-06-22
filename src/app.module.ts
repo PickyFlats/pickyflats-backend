@@ -11,6 +11,7 @@ import { JwtMiddleware } from './common/middleware/jwt.middleware';
 import { ListingsModule } from './modules/listings/listings.module';
 import { ListingCostsModule } from './modules/listing-costs/listing-costs.module';
 import { FilesModule } from './modules/files/files.module';
+import { CommentModule } from './modules/comments/comment.module';
 
 config();
 
@@ -25,6 +26,7 @@ const DB_URI = process.env.MONGODB_URI || '';
     AuthModule,
     ListingCostsModule,
     ListingsModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
