@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { AccountType } from 'src/shared/user/account-type.enum';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({ versionKey: false })
 export class User {
   @Prop()
   firstName: string;
@@ -22,6 +23,12 @@ export class User {
 
   @Prop({ required: false })
   roles: string[];
+
+  @Prop({ required: false })
+  accountType: AccountType;
+
+  @Prop({ required: false })
+  lastActivity: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
