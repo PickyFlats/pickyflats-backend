@@ -1,8 +1,8 @@
 export interface comment {
-  id: string;
-  comment: string;
-  file: { fileId: string };
   userId: string;
+  id: string;
+  text: string;
+  file: { fileId: string };
 
   createdAt: string;
 }

@@ -10,7 +10,7 @@ import {
 import { commentService } from './comment.service';
 import { comment } from './data/comment.dto';
 
-@Controller('comment')
+@Controller('comments')
 export class CommentController {
   constructor(private CommentService: commentService) {}
 
