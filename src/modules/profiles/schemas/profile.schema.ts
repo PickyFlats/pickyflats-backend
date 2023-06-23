@@ -8,7 +8,7 @@ export class Profile {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
-  @Prop()
+  @Prop({ default: null })
   profilePicture: string;
 
   @Prop({ default: false })

@@ -61,17 +61,4 @@ export class AuthController {
       helo: 'world',
     });
   }
-
-  @Get(['/me'])
-  @UseGuards(AuthGuard)
-  async currentUser(@Request() req, @Res() response) {
-    const userId = req.user?.userId;
-
-    const user = await this.usersService.getUserById(userId);
-    // get user profile
-    // const profile = await this.profileService.getProfileByUserId(userId);
-    // console.log(profile);
-
-    return response.json(user);
-  }
 }

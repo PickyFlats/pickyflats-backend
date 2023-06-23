@@ -6,13 +6,21 @@ import { Model } from 'mongoose';
 @Injectable()
 export class ProfilesService {
   constructor(
-    @InjectModel('Profile') private readonly profileModel: Model<Profile>,
+    @InjectModel(Profile.name) private readonly profileModel: Model<Profile>,
   ) {}
 
   // create profile without any data on registering new user
   async createProfile(userId: string): Promise<Profile> {
     const createdProfile = new this.profileModel({ userId });
     return createdProfile.save();
+  }
+
+  async updateProfileByUserId(userId: string, updateData: Partial<Profile>) {
+    const updatedProfile = await this.profileModel.findOneAndUpdate(
+      { userId },
+      updateData,
+    );
+    return updatedProfile;
   }
 
   async updateProfile(
@@ -22,14 +30,13 @@ export class ProfilesService {
     const updatedProfile = await this.profileModel.findByIdAndUpdate(
       profileId,
       updateData,
-      { new: true },
     );
     return updatedProfile;
   }
 
   async getProfileByUserId(userId: string): Promise<Profile> {
     const profile = await this.profileModel.findOne({ userId });
-    return profile;
+    return profile.toJSON();
   }
 
   async deleteProfile(profileId: string): Promise<Profile> {

@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
@@ -13,6 +18,14 @@ export class AuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = request.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      throw new UnauthorizedException('No token provided');
+      // No token provided, access denied
+    }
+
     const requiredRoles = this.reflector.get<string[]>(
       'roles',
       context.getHandler(),
@@ -20,13 +33,6 @@ export class AuthGuard implements CanActivate {
 
     if (!requiredRoles) {
       return true; // No roles are specified, allow access
-    }
-
-    const request = context.switchToHttp().getRequest();
-    const token = request.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      return false; // No token provided, access denied
     }
 
     try {

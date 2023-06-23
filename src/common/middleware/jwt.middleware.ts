@@ -13,8 +13,8 @@ export class JwtMiddleware implements NestMiddleware {
     if (token) {
       const decodedToken = this.jwtService.decode(token);
       if (decodedToken && typeof decodedToken === 'object') {
-        const { userId, email, roles } = decodedToken;
-        req.user = { userId, email, roles }; // Assuming the 'sub' property represents the user ID
+        const { sub, name, email, roles } = decodedToken;
+        req.user = { sub, name, email, roles }; // Assuming the 'sub' property represents the user ID
       }
     }
     next();
