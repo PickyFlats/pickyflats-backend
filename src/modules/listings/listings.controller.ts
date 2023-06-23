@@ -6,10 +6,12 @@ import {
   Post,
   Request,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ListingsService } from './listings.service';
 import { ListingDto } from './dto/listing.dto';
 import { ListingCostsService } from '../listing-costs/listing-costs.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('listings')
 export class ListingsController {
@@ -31,6 +33,17 @@ export class ListingsController {
     }
   }
 
+  // get current user listings
+  @Get(['/me'])
+  @UseGuards(AuthGuard)
+  async currentUser(@Request() req, @Res() response) {
+    const userId = req.user?.sub;
+
+    const listings = await this.listingsService.getListingsByUserId(userId);
+
+    return response.json(listings);
+  }
+
   @Post(['/new'])
   async createListing(
     @Request() req,
@@ -38,12 +51,12 @@ export class ListingsController {
     @Body() listingDto: ListingDto,
   ) {
     try {
-      const userId = req.user?.userId;
+      const userId = req.user?.sub;
       const newListing = await this.listingsService.createListing({
         ...listingDto,
         listedBy: userId,
       });
-      return response.json({ created: true });
+      return response.json({ id: newListing.id });
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         statusCode: 401,
