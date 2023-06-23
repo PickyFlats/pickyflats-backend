@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
 import { MulterModule } from '@nestjs/platform-express';
@@ -12,7 +12,7 @@ import { AuthModule } from '../auth/auth.module';
       dest: './uploads',
     }),
     MongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   providers: [FilesService],
   controllers: [FilesController],
