@@ -13,7 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from './auth.guard';
 import { Role } from './decorators/roles.decorator';
-import { Roles } from './schemas/roles.schema';
+import { Roles } from './roles.enum';
 import { UsersService } from '../users/users.service';
 import { ProfilesService } from '../profiles/profiles.service';
 
