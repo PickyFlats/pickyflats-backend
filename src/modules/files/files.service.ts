@@ -10,6 +10,10 @@ export class FilesService {
     @InjectModel(File.name) private readonly filesModel: Model<File>,
   ) {}
 
+  async getFileById(fileId) {
+    return this.filesModel.findById(fileId);
+  }
+
   async upload(file: Express.Multer.File) {
     const timestamp = new Date().getTime().toString();
     const filename = `${timestamp}-${file.originalname}`;

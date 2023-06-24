@@ -4,7 +4,21 @@ import { AccountType } from 'src/shared/user/account-type.enum';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({ versionKey: false })
+@Schema({
+  versionKey: false,
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.$id = ret._id;
+      delete ret._id;
+    },
+  },
+  toObject: {
+    transform: (doc, ret) => {
+      ret.$id = ret._id;
+      delete ret._id;
+    },
+  },
+})
 export class User {
   @Prop({ required: true })
   firstName: string;

@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Listing } from './schemas/listing.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ListingDto } from './dto/listing.dto';
 import { ListingCost } from '../listing-costs/schemas/listingCost.schema';
 
@@ -14,7 +14,10 @@ export class ListingsService {
   ) {}
 
   async createListing(data: ListingDto) {
-    return this.listingsModel.create(data);
+    return this.listingsModel.create({
+      ...data,
+      listedBy: new Types.ObjectId(data.listedBy),
+    });
   }
 
   async updateListingById(listingId, update: Partial<Listing>) {
@@ -34,7 +37,7 @@ export class ListingsService {
     return this.listingsModel.aggregate([
       {
         $match: {
-          listedBy: userId,
+          listedBy: new Types.ObjectId(userId),
         },
       },
       {
@@ -51,16 +54,48 @@ export class ListingsService {
               },
             },
           ],
-          as: 'listingCost',
+          as: 'costs',
         },
       },
       {
         $addFields: {
-          listingCost: {
-            $arrayElemAt: ['$listingCost', 0],
+          costs: {
+            $arrayElemAt: ['$costs', 0],
           },
+          $id: '$_id',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
         },
       },
     ]);
+  }
+
+  async getListingById(listingID) {
+    const listing = await this.listingsModel.findById(listingID);
+
+    if (!listing) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    const costs = await this.listingCostsModel
+      .findOne({
+        listingID: new Types.ObjectId(listingID),
+      })
+      .select('-_id -listingID');
+    return {
+      ...listing.toJSON(),
+      ...(costs ? { costs: costs.toJSON() } : {}),
+    };
+  }
+
+  async deleteListingById(listingID) {
+    await this.listingsModel.findByIdAndDelete(listingID);
+    // !TODO: clean gallery images
+    await this.listingCostsModel.deleteOne({
+      listingID: new Types.ObjectId(listingID),
+    });
   }
 }

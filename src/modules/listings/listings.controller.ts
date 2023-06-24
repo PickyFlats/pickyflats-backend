@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Request,
   Res,
@@ -44,7 +47,21 @@ export class ListingsController {
     return response.json(listings);
   }
 
+  @Get(['/:listingID'])
+  async getListingById(@Res() response, @Param('listingID') listingID: string) {
+    try {
+      const listing = await this.listingsService.getListingById(listingID);
+      return response.json(listing);
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
   @Post(['/new'])
+  @UseGuards(AuthGuard)
   async createListing(
     @Request() req,
     @Res() response,
@@ -65,5 +82,38 @@ export class ListingsController {
     }
   }
 
-  // save/create listing costs by listingID
+  @Patch(['/:id'])
+  @UseGuards(AuthGuard)
+  async updateListing(
+    @Request() req,
+    @Res() response,
+    @Param('id') listingID: string,
+    @Body() listingDto: ListingDto,
+  ) {
+    try {
+      const userId = req.user?.sub;
+      // !TODO: ignore listing update if owner is diff
+      await this.listingsService.updateListingById(listingID, listingDto);
+      response.end();
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
+  @Delete(['/:id'])
+  @UseGuards(AuthGuard)
+  async deleteListingById(@Res() response, @Param('id') listingID: string) {
+    try {
+      await this.listingsService.deleteListingById(listingID);
+      response.end();
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
 }

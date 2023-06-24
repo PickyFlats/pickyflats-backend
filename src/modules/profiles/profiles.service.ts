@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Profile } from './schemas/profile.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class ProfilesService {
@@ -11,13 +11,15 @@ export class ProfilesService {
 
   // create profile without any data on registering new user
   async createProfile(userId: string): Promise<Profile> {
-    const createdProfile = new this.profileModel({ userId });
+    const createdProfile = new this.profileModel({
+      userId: new Types.ObjectId(userId),
+    });
     return createdProfile.save();
   }
 
   async updateProfileByUserId(userId: string, updateData: Partial<Profile>) {
     const updatedProfile = await this.profileModel.findOneAndUpdate(
-      { userId },
+      { userId: new Types.ObjectId(userId) },
       updateData,
     );
     return updatedProfile;
@@ -35,8 +37,13 @@ export class ProfilesService {
   }
 
   async getProfileByUserId(userId: string): Promise<Profile> {
-    const profile = await this.profileModel.findOne({ userId });
-    return profile.toJSON();
+    const profile = await this.profileModel.findOne({
+      userId: new Types.ObjectId(userId),
+    });
+    if (!profile) {
+      throw new NotFoundException('Invalid profile');
+    }
+    return profile?.toJSON();
   }
 
   async deleteProfile(profileId: string): Promise<Profile> {

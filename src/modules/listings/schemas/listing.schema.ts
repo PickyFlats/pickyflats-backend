@@ -4,7 +4,26 @@ import { FileSchema } from 'src/modules/files/schemas/file.schema';
 
 export type ListingDocument = HydratedDocument<Listing>;
 
-@Schema({ versionKey: false })
+export interface GalleryItem {
+  id: string;
+  name: string;
+  photos: [Types.ObjectId];
+}
+@Schema({
+  versionKey: false,
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.$id = ret._id;
+      delete ret._id;
+    },
+  },
+  toObject: {
+    transform: (doc, ret) => {
+      ret.$id = ret._id;
+      delete ret._id;
+    },
+  },
+})
 export class Listing {
   @Prop()
   purpose: string;
@@ -30,8 +49,8 @@ export class Listing {
   @Prop({ default: 0 })
   kitchen: number;
 
-  @Prop({ type: [{ type: FileSchema }] })
-  gallery: File[];
+  @Prop({ type: [Object] })
+  gallery: GalleryItem[];
 
   // sellerInfo
   @Prop()
