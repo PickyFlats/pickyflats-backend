@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type FileDocument = HydratedDocument<File>;
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, timestamps: true })
 export class File {
   @Prop({ required: true })
   filename: string;

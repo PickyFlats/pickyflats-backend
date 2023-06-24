@@ -11,6 +11,7 @@ export interface GalleryItem {
 }
 @Schema({
   versionKey: false,
+  timestamps: true,
   toJSON: {
     transform: (doc, ret) => {
       ret.$id = ret._id;

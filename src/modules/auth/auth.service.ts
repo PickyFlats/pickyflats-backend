@@ -7,7 +7,7 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { Roles } from './schemas/roles.schema';
+import { Roles } from './roles.enum';
 import { AccountType } from 'src/shared/user/account-type.enum';
 import { ProfilesService } from '../profiles/profiles.service';
 

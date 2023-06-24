@@ -6,6 +6,7 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({
   versionKey: false,
+  timestamps: true,
   toJSON: {
     transform: (doc, ret) => {
       ret.$id = ret._id;
