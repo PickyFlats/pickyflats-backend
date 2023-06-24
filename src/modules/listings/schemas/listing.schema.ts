@@ -4,6 +4,11 @@ import { FileSchema } from 'src/modules/files/schemas/file.schema';
 
 export type ListingDocument = HydratedDocument<Listing>;
 
+export interface GalleryItem {
+  id: string;
+  name: string;
+  photos: [Types.ObjectId];
+}
 @Schema({
   versionKey: false,
   toJSON: {
@@ -44,8 +49,8 @@ export class Listing {
   @Prop({ default: 0 })
   kitchen: number;
 
-  @Prop({ type: [{ type: FileSchema }] })
-  gallery: File[];
+  @Prop({ type: [Object] })
+  gallery: GalleryItem[];
 
   // sellerInfo
   @Prop()

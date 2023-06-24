@@ -36,6 +36,17 @@ export class ListingsController {
     }
   }
 
+  // get current user listings
+  @Get(['/me'])
+  @UseGuards(AuthGuard)
+  async currentUser(@Request() req, @Res() response) {
+    const userId = req.user?.sub;
+
+    const listings = await this.listingsService.getListingsByUserId(userId);
+
+    return response.json(listings);
+  }
+
   @Get(['/:listingID'])
   async getListingById(@Res() response, @Param('listingID') listingID: string) {
     try {
@@ -47,17 +58,6 @@ export class ListingsController {
         message: err.message,
       });
     }
-  }
-
-  // get current user listings
-  @Get(['/me'])
-  @UseGuards(AuthGuard)
-  async currentUser(@Request() req, @Res() response) {
-    const userId = req.user?.sub;
-
-    const listings = await this.listingsService.getListingsByUserId(userId);
-
-    return response.json(listings);
   }
 
   @Post(['/new'])
