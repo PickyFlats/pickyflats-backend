@@ -1,8 +1,7 @@
-export interface comment {
-  userId: string;
+export interface commentDTO {
   id: string;
+  userId: string;
+  listingId: string;
   text: string;
   file: { fileId: string };
-
-  createdAt: string;
 }

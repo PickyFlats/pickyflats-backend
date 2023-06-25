@@ -1,19 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { comment } from './data/comment.dto';
+import { Injectable, Param } from '@nestjs/common';
+import { commentDTO } from './data/comment.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Comment } from './schemas/commentSchema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class commentService {
-  public comments: comment[] = [];
+  constructor(
+    @InjectModel(Comment.name)
+    private readonly commentModel: Model<Comment>,
+  ) {}
+  public comments: commentDTO[] = [];
 
-  //add comment service
-  addCommentService(comment: comment): string {
-    this.comments.push(comment);
-    return 'Comment Has Been added';
+  // Post
+  async addCommentService(commentId, data: commentDTO) {
+    let comment = await this.commentModel.findOne({ Id: commentId });
+    if (!comment) {
+      comment = await this.commentModel.create(data);
+    }
   }
 
   //update comment service
 
-  updateCommentService(comment: comment): string {
+  updateCommentService(comment: commentDTO): string {
     const index = this.comments.findIndex((currentComment) => {
       return currentComment.id == comment.id;
     });
@@ -34,7 +43,16 @@ export class commentService {
   }
 
   //find all comments
-  findAllComments(): comment[] {
-    return this.comments;
+  async getAllComments() {
+    return this.commentModel.find();
+  }
+
+  async getOneComment(@Param('id') id: string) {
+    return this.commentModel.findById(id);
+  }
+
+  //find comment for one listing
+  async getListingComments(listingId: string) {
+    return this.commentModel.find({ listingId: listingId });
   }
 }
