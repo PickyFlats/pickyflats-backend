@@ -12,6 +12,7 @@ import { ListingsModule } from './modules/listings/listings.module';
 import { ListingCostsModule } from './modules/listing-costs/listing-costs.module';
 import { FilesModule } from './modules/files/files.module';
 import { CommentModule } from './modules/comments/comment.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 config();
 
@@ -27,6 +28,7 @@ const DB_URI = process.env.MONGODB_URI || '';
     ListingCostsModule,
     ListingsModule,
     CommentModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

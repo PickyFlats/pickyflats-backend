@@ -11,12 +11,14 @@ export type UserDocument = HydratedDocument<User>;
     transform: (doc, ret) => {
       ret.$id = ret._id;
       delete ret._id;
+      delete ret.password;
     },
   },
   toObject: {
     transform: (doc, ret) => {
       ret.$id = ret._id;
       delete ret._id;
+      delete ret.password;
     },
   },
 })
