@@ -8,6 +8,7 @@ import {
   Post,
   Res,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { commentService } from './comment.service';
 import { commentDTO } from './data/comment.dto';
@@ -31,12 +32,12 @@ export class CommentController {
     }
   }
 
-  @Get(':id')
-  async getOneComment(@Res() response, @Param('_id') id: string) {
+  @Get(['/:id'])
+  async getCommentById(@Res() response, @Param('commentId') id: string) {
     // return this.CommentService.findAllComments();
     console.log('!!!!!!!');
     try {
-      const oneComment = await this.CommentService.getOneComment(id);
+      const oneComment = await this.CommentService.getCommentById(id);
       return response.json(oneComment);
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
@@ -51,8 +52,6 @@ export class CommentController {
     @Res() response,
     @Param('listingId') listingId: string,
   ) {
-    // return this.CommentService.findAllComments();
-
     try {
       const listingComments = await this.CommentService.getListingComments(
         listingId,
@@ -67,21 +66,26 @@ export class CommentController {
     }
   }
 
-  @Put('/update')
-  async updateComments(@Body() comment: commentDTO) {
-    return this.CommentService.updateCommentService(comment);
-  }
-
-  @Delete('/delete/:id')
-  async deleteComments(@Param('id') commentId: string) {
-    return this.CommentService.deleteCommentService(commentId);
-  }
-
   @Post('/add')
   async addComments(@Res() response, @Body() comment: commentDTO) {
     try {
       await this.CommentService.addCommentService(comment.id, comment);
       return response.json({ created: true });
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
+  //delete
+
+  @Delete(['/:id'])
+  async deleteListingById(@Res() response, @Param('id') deleteID: string) {
+    try {
+      await this.CommentService.deleteCommentById(deleteID);
+      response.end();
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         statusCode: 401,

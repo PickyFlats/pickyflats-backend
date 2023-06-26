@@ -67,7 +67,7 @@ export class Listing {
   @Prop()
   flatCountry: string;
   @Prop()
-  flatCity: string;
+  flatCity: { type: string; index: true };
   @Prop()
   flatStreet1: string;
   @Prop()

@@ -14,6 +14,6 @@ import { Comment, CommentSchema } from './schemas/commentSchema';
 })
 export class CommentModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(commentMiddleware).forRoutes('comment');
+    consumer.apply(commentMiddleware).forRoutes('comments');
   }
 }
