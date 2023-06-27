@@ -63,11 +63,11 @@ export class Listing {
   @Prop()
   sellerContact: string;
 
-  // flat
+  // flats
   @Prop()
   flatCountry: string;
   @Prop()
-  flatCity: { type: string; index: true };
+  flatCity: string;
   @Prop()
   flatStreet1: string;
   @Prop()

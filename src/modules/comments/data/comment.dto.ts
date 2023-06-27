@@ -1,7 +1,9 @@
-export interface commentDTO {
-  id: string;
-  userId: string;
-  listingId: string;
-  text: string;
-  file: { fileId: string };
+import { Comment, CommentSchema } from './../schemas/commentSchema';
+import { Type } from '@nestjs/common';
+
+export class commentDTO extends Comment {
+  // userId: string;
+  // listingId: string;
+  // text: string;
+  // file: string[];
 }

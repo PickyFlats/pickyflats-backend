@@ -13,33 +13,11 @@ export class commentService {
   public comments: commentDTO[] = [];
 
   // Post :working
-  async addCommentService(commentId, data: commentDTO) {
-    let comment = await this.commentModel.findOne({ Id: commentId });
-    if (!comment) {
-      comment = await this.commentModel.create(data);
-    }
-  }
-
-  //update comment service
-
-  updateCommentService(comment: commentDTO): string {
-    const index = this.comments.findIndex((currentComment) => {
-      return currentComment.id == comment.id;
-    });
-
-    this.comments[index] = comment;
-
-    return 'Comment updated success';
-  }
-
-  //delete comment service
-
-  deleteCommentService(id: string): string {
-    this.comments = this.comments.filter((c) => {
-      return c.id != id;
-    });
-
-    return 'comment deleted success';
+  async addCommentService(data: commentDTO) {
+    // let comment = await this.commentModel.findOne({ : commentId });
+    // if (!comment) {
+    await this.commentModel.create(data);
+    // }
   }
 
   //find all comments: working

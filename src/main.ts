@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
 
+declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug'], //
@@ -9,5 +10,10 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   await app.listen(3000);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();

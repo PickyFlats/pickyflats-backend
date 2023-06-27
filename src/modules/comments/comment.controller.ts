@@ -9,6 +9,7 @@ import {
   Res,
   HttpStatus,
   Patch,
+  Request,
 } from '@nestjs/common';
 import { commentService } from './comment.service';
 import { commentDTO } from './data/comment.dto';
@@ -32,8 +33,21 @@ export class CommentController {
     }
   }
 
+  @Post('/add')
+  async addComments(@Res() response, @Body() comment: commentDTO) {
+    try {
+      await this.CommentService.addCommentService(comment);
+      return response.json({ created: true });
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
   @Get(['/:id'])
-  async getCommentById(@Res() response, @Param('commentId') id: string) {
+  async getCommentById(@Res() response, @Param('id') id: string) {
     // return this.CommentService.findAllComments();
     console.log('!!!!!!!');
     try {
@@ -66,11 +80,13 @@ export class CommentController {
     }
   }
 
-  @Post('/add')
-  async addComments(@Res() response, @Body() comment: commentDTO) {
+  //delete ok
+
+  @Delete(['/:id'])
+  async deleteListingById(@Res() response, @Param('id') deleteID: string) {
     try {
-      await this.CommentService.addCommentService(comment.id, comment);
-      return response.json({ created: true });
+      await this.CommentService.deleteCommentById(deleteID);
+      response.end();
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         statusCode: 401,
@@ -79,12 +95,19 @@ export class CommentController {
     }
   }
 
-  //delete
+  // patch ok
 
-  @Delete(['/:id'])
-  async deleteListingById(@Res() response, @Param('id') deleteID: string) {
+  @Patch(['/:id'])
+  async updateListing(
+    @Request() req,
+    @Res() response,
+    @Param('id') commentId: string,
+    @Body() commentDTO: commentDTO,
+  ) {
     try {
-      await this.CommentService.deleteCommentById(deleteID);
+      // const userId = req.user?.sub;
+      // !TODO: ignore listing update if owner is diff
+      await this.CommentService.updateCommentById(commentId, commentDTO);
       response.end();
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
