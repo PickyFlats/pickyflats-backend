@@ -13,6 +13,8 @@ import { ListingCostsModule } from './modules/listing-costs/listing-costs.module
 import { FilesModule } from './modules/files/files.module';
 import { CommentModule } from './modules/comments/comment.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { JwtService } from '@nestjs/jwt';
+import { LikeModule } from './modules/like/like.module';
 
 config();
 
@@ -29,6 +31,7 @@ const DB_URI = process.env.MONGODB_URI || '';
     ListingsModule,
     CommentModule,
     ChatModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

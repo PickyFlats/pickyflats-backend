@@ -25,7 +25,7 @@ export class ListingsService {
   }
 
   async findListingById(listingId) {
-    return await this.listingsModel.findById(listingId);
+    return await this.listingsModel.find({ listingId: listingId });
   }
 
   async getListings() {

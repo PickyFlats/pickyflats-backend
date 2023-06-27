@@ -1,40 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { comment } from './data/comment.dto';
+import { Injectable, Param } from '@nestjs/common';
+import { commentDTO } from './data/comment.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Comment } from './schemas/commentSchema';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class commentService {
-  public comments: comment[] = [];
+  constructor(
+    @InjectModel(Comment.name)
+    private readonly commentModel: Model<Comment>,
+  ) {}
+  public comments: commentDTO[] = [];
 
-  //add comment service
-  addCommentService(comment: comment): string {
-    this.comments.push(comment);
-    return 'Comment Has Been added';
+  // Post :working
+  async addCommentService(data: commentDTO) {
+    // let comment = await this.commentModel.findOne({ : commentId });
+    // if (!comment) {
+    await this.commentModel.create(data);
+    // }
   }
 
-  //update comment service
+  //find all comments: working
+  async getAllComments() {
+    return this.commentModel.find();
+  }
+  //find comment by id
+  async getCommentById(@Param('_id') id: string) {
+    return this.commentModel.findById(id);
+  }
 
-  updateCommentService(comment: comment): string {
-    const index = this.comments.findIndex((currentComment) => {
-      return currentComment.id == comment.id;
+  //find comment for one listing
+  async getListingComments(listingId: string) {
+    return this.commentModel.find({ listingId: listingId });
+  }
+
+  //delete comment
+
+  async deleteCommentById(commentID) {
+    await this.commentModel.findByIdAndDelete(commentID);
+    // !TODO: clean gallery images
+    await this.commentModel.deleteOne({
+      commentId: new Types.ObjectId(commentID),
     });
-
-    this.comments[index] = comment;
-
-    return 'Comment updated success';
   }
 
-  //delete comment service
+  //update comment
 
-  deleteCommentService(id: string): string {
-    this.comments = this.comments.filter((c) => {
-      return c.id != id;
-    });
-
-    return 'comment deleted success';
-  }
-
-  //find all comments
-  findAllComments(): comment[] {
-    return this.comments;
+  async updateCommentById(commentId, update: Partial<Comment>) {
+    await this.commentModel.findByIdAndUpdate(commentId, { $set: update });
   }
 }
