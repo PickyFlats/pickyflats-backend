@@ -8,11 +8,13 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { ProfilesModule } from '../profiles/profiles.module';
+import { PassageModule } from './passage/passage.module';
 
 @Module({
   imports: [
     UsersModule,
     ProfilesModule,
+    PassageModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.register({
       global: true,

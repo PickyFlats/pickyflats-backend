@@ -61,4 +61,19 @@ export class AuthController {
       helo: 'world',
     });
   }
+
+  // login using passage token
+
+  @Post(['/login/passage'])
+  async userLoginUsingPassage(@Request() req, @Res() response) {
+    try {
+      const loginRes = await this.authService.loginUsingPassageToken(req);
+      return response.json(loginRes);
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
 }
