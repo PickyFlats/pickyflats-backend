@@ -6,31 +6,114 @@ import {
   Delete,
   Param,
   Post,
+  Res,
+  HttpStatus,
+  Patch,
+  Request,
 } from '@nestjs/common';
 import { commentService } from './comment.service';
-import { comment } from './data/comment.dto';
+import { commentDTO } from './data/comment.dto';
 
-@Controller('comment')
+@Controller('comments')
 export class CommentController {
-  constructor(private CommentService: commentService) {}
+  constructor(public CommentService: commentService) {}
 
   @Get('findall')
-  getAllComments(): comment[] {
-    return this.CommentService.findAllComments();
-  }
-
-  @Put('/update')
-  updateComments(@Body() comment: comment): string {
-    return this.CommentService.updateCommentService(comment);
-  }
-
-  @Delete('/delete/:id')
-  deleteComments(@Param('id') commentId: string): string {
-    return this.CommentService.deleteCommentService(commentId);
+  async getFullComments(@Res() response) {
+    // return this.CommentService.findAllComments();
+    console.log('fff');
+    try {
+      const allComments = await this.CommentService.getAllComments();
+      return response.json(allComments);
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
   }
 
   @Post('/add')
-  addComments(@Body() comment: comment): string {
-    return this.CommentService.addCommentService(comment);
+  async addComments(@Res() response, @Body() comment: commentDTO) {
+    try {
+      await this.CommentService.addCommentService(comment);
+      return response.json({ created: true });
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
+  @Get(['/:id'])
+  async getCommentById(@Res() response, @Param('id') id: string) {
+    // return this.CommentService.findAllComments();
+    console.log('!!!!!!!');
+    try {
+      const oneComment = await this.CommentService.getCommentById(id);
+      return response.json(oneComment);
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
+  @Get('list/:listingId')
+  async getListingComments(
+    @Res() response,
+    @Param('listingId') listingId: string,
+  ) {
+    try {
+      const listingComments = await this.CommentService.getListingComments(
+        listingId,
+      );
+      console.log('inside##########');
+      return response.json(listingComments);
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
+  //delete ok
+
+  @Delete(['/:id'])
+  async deleteListingById(@Res() response, @Param('id') deleteID: string) {
+    try {
+      await this.CommentService.deleteCommentById(deleteID);
+      response.end();
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
+  }
+
+  // patch ok
+
+  @Patch(['/:id'])
+  async updateListing(
+    @Request() req,
+    @Res() response,
+    @Param('id') commentId: string,
+    @Body() commentDTO: commentDTO,
+  ) {
+    try {
+      // const userId = req.user?.sub;
+      // !TODO: ignore listing update if owner is diff
+      await this.CommentService.updateCommentById(commentId, commentDTO);
+      response.end();
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
+        message: err.message,
+      });
+    }
   }
 }

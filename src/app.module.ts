@@ -12,8 +12,8 @@ import { ListingCostsModule } from './modules/listing-costs/listing-costs.module
 import { FilesModule } from './modules/files/files.module';
 import { CommentModule } from './modules/comments/comment.module';
 import { ChatModule } from './modules/chat/chat.module';
-import { PassageModule } from './modules/auth/passage/passage.module';
 import { ConfigModule } from '@nestjs/config';
+import { LikeModule } from './modules/like/like.module';
 
 const DB_URI = process.env.MONGODB_URI || '';
 
@@ -31,6 +31,7 @@ const DB_URI = process.env.MONGODB_URI || '';
     ListingsModule,
     CommentModule,
     ChatModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
