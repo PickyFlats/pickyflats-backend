@@ -34,7 +34,6 @@ export class AuthController {
       return response.status(HttpStatus.BAD_REQUEST).json({
         statusCode: 401,
         message: err.message,
-        error: 'LOGIN_FAILED',
       });
     }
   }
@@ -46,8 +45,8 @@ export class AuthController {
       return response.json(registerRes);
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: 401,
         message: err.message,
-        error: 'REGISTER_FAILED',
       });
     }
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateConnectionDto } from './dto/create-connection.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -69,5 +69,18 @@ export class ChatService {
         //   .populate('participants lastMessage');
         .populate('lastMessage')
     );
+  }
+
+  async isValidConversation(conversationId: string) {
+    const conversation = await this.conversationModel.findById(
+      conversationId,
+      // '_id',
+    );
+
+    if (!conversation) {
+      throw new NotFoundException("Conversation doesn't exits!");
+    }
+
+    return conversation;
   }
 }

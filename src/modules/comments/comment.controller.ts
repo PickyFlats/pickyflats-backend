@@ -106,7 +106,6 @@ export class CommentController {
   ) {
     try {
       // const userId = req.user?.sub;
-      // !TODO: ignore listing update if owner is diff
       await this.CommentService.updateCommentById(commentId, commentDTO);
       response.end();
     } catch (err) {

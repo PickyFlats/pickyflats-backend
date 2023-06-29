@@ -3,12 +3,10 @@ import { Types } from 'mongoose';
 
 @Schema({ versionKey: false, timestamps: true })
 export class Comment {
-  // @Prop({ type: Types.ObjectId, ref: 'Comment', required: true })
-  // id: Types.ObjectId | string;
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Comment', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Listing', required: true })
   listingId: Types.ObjectId;
 
   @Prop()

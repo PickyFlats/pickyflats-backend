@@ -7,6 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
+import { getClient } from 'src/shared/utils/get-client';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,7 +19,8 @@ export class AuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
+    // const request = context.switchToHttp().getRequest();
+    const request = getClient(context);
     const token = request.headers.authorization?.split(' ')[1];
 
     if (!token) {
@@ -30,6 +32,7 @@ export class AuthGuard implements CanActivate {
       'roles',
       context.getHandler(),
     );
+    // TODO: check for roles using websockets
 
     if (!requiredRoles) {
       return true; // No roles are specified, allow access

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -21,5 +21,15 @@ export class UsersService {
   ): Promise<boolean> {
     await this.userModel.findByIdAndUpdate(userId, updateData);
     return true;
+  }
+
+  async validateUserById(id: string) {
+    const user = await this.userModel.findById(id).select('-password');
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 }
