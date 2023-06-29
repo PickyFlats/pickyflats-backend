@@ -14,6 +14,7 @@ import { CommentModule } from './modules/comments/comment.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { ConfigModule } from '@nestjs/config';
 import { LikeModule } from './modules/like/like.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 const DB_URI = process.env.MONGODB_URI || '';
 
@@ -32,6 +33,7 @@ const DB_URI = process.env.MONGODB_URI || '';
     CommentModule,
     ChatModule,
     LikeModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
