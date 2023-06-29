@@ -1,8 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-@Schema({ versionKey: false, timestamps: true })
-export class Comment {
+@Schema({
+  versionKey: false,
+  timestamps: true,
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.$id = ret._id;
+      ret.$createdAt = ret.createdAt;
+      delete ret.createdAt;
+    },
+  },
+  toObject: {
+    transform: (doc, ret) => {
+      ret.$id = ret._id;
+      ret.$createdAt = ret.createdAt;
+      delete ret.createdAt;
+    },
+  },
+})
+export class Comment extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
