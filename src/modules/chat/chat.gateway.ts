@@ -79,6 +79,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         senderID: user.id,
       });
 
+      // update last message & timestamp for conversation
+      await this.chatService.updateConversationById(conversationID, {
+        lastMessageID: newMessage._id,
+        lastUpdated: new Date(),
+      });
+
       // filter other user
       const receiver = conversation.participants.filter((i) => i !== user.id);
       if (receiver.length < 1) return false;
@@ -89,7 +95,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // send back to socket joined connection
       this.server.to(`user_${user.id}`).emit('message:sent', encodedNewMessage); // feedback to sender
       // emit mesg to receiver
-      this.server.to(`user_${receiver[0]}`).emit('message:new', encodedNewMessage);
+      this.server
+        .to(`user_${receiver[0]}`)
+        .emit('message:new', encodedNewMessage);
     } catch (error) {
       //
       console.log(error);

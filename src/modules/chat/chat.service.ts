@@ -83,4 +83,8 @@ export class ChatService {
 
     return conversation;
   }
+
+  async updateConversationById(id, update) {
+    this.conversationModel.findByIdAndUpdate(id, { $set: update });
+  }
 }
