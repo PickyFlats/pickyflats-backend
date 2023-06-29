@@ -32,4 +32,13 @@ export class ListingCostsService {
       { $set: data },
     );
   }
+
+  async getListingCostsDataByListingIds(ids: string[]) {
+    const data = await this.listingCostModel
+      .find({
+        listingID: { $in: ids.map((id) => new Types.ObjectId(id)) },
+      })
+      .select('-_id');
+    return data;
+  }
 }

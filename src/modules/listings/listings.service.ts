@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ListingDto } from './dto/listing.dto';
 import { ListingCost } from '../listing-costs/schemas/listingCost.schema';
+import { ListingCostsService } from '../listing-costs/listing-costs.service';
 
 @Injectable()
 export class ListingsService {
@@ -11,6 +12,7 @@ export class ListingsService {
     @InjectModel(Listing.name) private readonly listingsModel: Model<Listing>,
     @InjectModel(ListingCost.name)
     private readonly listingCostsModel: Model<ListingCost>,
+    private readonly listingCostService: ListingCostsService,
   ) {}
 
   async createListing(data: ListingDto) {
@@ -29,7 +31,22 @@ export class ListingsService {
   }
 
   async getListings() {
-    return this.listingsModel.find();
+    const listings = await this.listingsModel.find();
+
+    const listingIDs = [...new Set(listings.flatMap((res) => res.id))];
+
+    // find listing costs for listings
+    const listingCosts =
+      await this.listingCostService.getListingCostsDataByListingIds(listingIDs);
+
+    const listingsWithCost = listings.map((listing) => {
+      const costs = listingCosts
+        .find((l) => l.listingID.toString() === listing._id.toString())
+        ?.toJSON();
+      return { ...listing.toJSON(), costs };
+    });
+
+    return listingsWithCost;
   }
 
   async getListingsByUserId(userId) {
