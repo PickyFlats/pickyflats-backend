@@ -29,6 +29,7 @@
     "@nestjs/websockets": "^10.0.3",
     "@passageidentity/passage-node": "^2.3.2",
     "@types/multer": "^1.4.7",
+    "@types/socket.io": "^3.0.2",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
