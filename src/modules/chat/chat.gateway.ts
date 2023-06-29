@@ -1,4 +1,4 @@
-import { SetMetadata, UseGuards } from '@nestjs/common';
+import { Inject, SetMetadata, UseGuards, forwardRef } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -35,18 +35,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   constructor(
-    private chatService: ChatService,
+    @Inject(forwardRef(() => ChatService)) private chatService: ChatService,
+    @Inject(forwardRef(() => MessageService))
     private messageService: MessageService,
   ) {}
 
   handleConnection(client: any, ...args: any[]) {
     // const token = client.handshake.auth.token;
     // // Handle WebSocket connection
-    console.log('WebSocket client connected');
+    // console.log('WebSocket client connected');
   }
   handleDisconnect(client: any) {
     // Handle WebSocket disconnection
-    console.log('WebSocket client disconnected');
+    // console.log('WebSocket client disconnected');
   }
 
   @SubscribeMessage('user:subscribe')
@@ -99,9 +100,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         .to(`user_${receiver[0]}`)
         .emit('message:new', encodedNewMessage);
     } catch (error) {
-      //
       console.log(error);
-      console.log('message operation failed');
+    }
+  }
+
+  @SubscribeMessage('message:delete')
+  async handleMessageDelete(
+    @MessageBody() payload: any,
+    @CurrentUser() user: User,
+  ) {
+    try {
+      let message = new TextDecoder().decode(payload);
+      message = JSON.parse(message);
+      // TODO: check user is online
+      this.server.to(`user_${message['to']}`).emit('message:deleted', payload); // feedback to sender
+    } catch (error) {
+      console.log(error);
     }
   }
 }
