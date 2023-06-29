@@ -3,21 +3,21 @@ import { commentDTO } from './data/comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment } from './schemas/commentSchema';
 import { Model, Types } from 'mongoose';
+import { ProfilesService } from '../profiles/profiles.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class commentService {
   constructor(
     @InjectModel(Comment.name)
     private readonly commentModel: Model<Comment>,
+    private readonly profileService: ProfilesService,
+    private readonly usersService: UsersService,
   ) {}
-  public comments: commentDTO[] = [];
 
   // Post :working
   async addCommentService(data: commentDTO) {
-    // let comment = await this.commentModel.findOne({ : commentId });
-    // if (!comment) {
-    await this.commentModel.create(data);
-    // }
+    return this.commentModel.create(data);
   }
 
   //find all comments: working
@@ -29,9 +29,29 @@ export class commentService {
     return this.commentModel.findById(id);
   }
 
-  //find comment for one listing
+  //find comments for one listing
   async getListingComments(listingId: string) {
-    return this.commentModel.find({ listingId: listingId });
+    const comments = await this.commentModel.find({ listingId: listingId });
+
+    const commentUserIDs = [
+      ...new Set(comments.flatMap((res) => res.userId.toString())),
+    ];
+
+    //comments with all users profiles
+    const userProfiles = await this.profileService.getUserProfiles(
+      commentUserIDs,
+    );
+    const users = await this.usersService.getUsersDataByIds(commentUserIDs);
+
+    const commentsWithUserInfo = comments.map((c) => {
+      const user = users.find((u) => u.id === c.userId.toString())?.toJSON();
+      const userProfile = userProfiles
+        .find((u) => u.userId.toString() === c.userId.toString())
+        ?.toJSON();
+      return { ...c.toJSON(), user: { ...user, ...userProfile } };
+    });
+
+    return commentsWithUserInfo;
   }
 
   //delete comment

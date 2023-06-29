@@ -50,4 +50,13 @@ export class ProfilesService {
     const deletedProfile = await this.profileModel.findByIdAndDelete(profileId);
     return deletedProfile;
   }
+
+  async getUserProfiles(ids: string[] | any) {
+    const profiles = await this.profileModel
+      .find({
+        userId: { $in: ids.map((id) => new Types.ObjectId(id)) },
+      })
+      .select('profilePicture profileVerified userId');
+    return profiles;
+  }
 }

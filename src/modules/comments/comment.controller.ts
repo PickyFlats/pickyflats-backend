@@ -34,10 +34,20 @@ export class CommentController {
   }
 
   @Post('/add')
-  async addComments(@Res() response, @Body() comment: commentDTO) {
+  async addComments(
+    @Request() req,
+    @Res() response,
+    @Body() comment: commentDTO,
+  ) {
     try {
-      await this.CommentService.addCommentService(comment);
-      return response.json({ created: true });
+      const userId = req.user?.sub;
+
+      const newComment = await this.CommentService.addCommentService({
+        ...comment,
+        userId,
+      } as any);
+
+      return response.json(newComment);
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         statusCode: 401,
@@ -49,7 +59,6 @@ export class CommentController {
   @Get(['/:id'])
   async getCommentById(@Res() response, @Param('id') id: string) {
     // return this.CommentService.findAllComments();
-    console.log('!!!!!!!');
     try {
       const oneComment = await this.CommentService.getCommentById(id);
       return response.json(oneComment);
@@ -61,16 +70,13 @@ export class CommentController {
     }
   }
 
-  @Get('list/:listingId')
-  async getListingComments(
-    @Res() response,
-    @Param('listingId') listingId: string,
-  ) {
+  @Get('listing/:id')
+  async getListingComments(@Res() response, @Param('id') listingId: string) {
     try {
       const listingComments = await this.CommentService.getListingComments(
         listingId,
       );
-      console.log('inside##########');
+
       return response.json(listingComments);
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
@@ -79,8 +85,6 @@ export class CommentController {
       });
     }
   }
-
-  //delete ok
 
   @Delete(['/:id'])
   async deleteListingById(@Res() response, @Param('id') deleteID: string) {

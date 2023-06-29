@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -31,5 +31,14 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getUsersDataByIds(ids: string[]) {
+    const users = await this.userModel
+      .find({
+        _id: { $in: ids.map((id) => new Types.ObjectId(id)) },
+      })
+      .select('firstName lastName accountType');
+    return users;
   }
 }
