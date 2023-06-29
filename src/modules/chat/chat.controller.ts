@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -99,6 +100,18 @@ export class ChatController {
         senderID: userId, // senderid will always be session user
       });
       return response.json(newMessageId);
+    } catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        message: err.message,
+      });
+    }
+  }
+
+  @Delete('/message/:id')
+  async deleteMessageById(@Res() response, @Param('id') id: string) {
+    try {
+      await this.messageService.deleteMessageById(id);
+      response.end();
     } catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         message: err.message,
