@@ -43,7 +43,7 @@ export class ListingsController {
   async currentUser(@Request() req, @Res() response) {
     const userId = req.user?.sub;
 
-    const listings = await this.listingsService.getListingsByUserId(userId);
+    const listings = await this.listingsService.getListingsWithCostByUserId(userId);
 
     return response.json(listings);
   }
