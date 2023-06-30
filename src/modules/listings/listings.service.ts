@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Listing } from './schemas/listing.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -31,7 +35,7 @@ export class ListingsService {
   }
 
   async getListings() {
-    const listings = await this.listingsModel.find();
+    const listings = await this.listingsModel.find({ isListed: true });
 
     const listingIDs = [...new Set(listings.flatMap((res) => res.id))];
 
@@ -114,5 +118,43 @@ export class ListingsService {
     await this.listingCostsModel.deleteOne({
       listingID: new Types.ObjectId(listingID),
     });
+  }
+
+  // search
+  async getListingsByQuery(query) {
+    const searchTerm = query?.q;
+    if (searchTerm && searchTerm.length < 3) {
+      throw new BadRequestException(
+        'Please enter at least 3 characters to search for flats.',
+      );
+    }
+    const listings = await this.listingsModel.find({
+      ...(query?.q
+        ? {
+            $or: [
+              { flatCountry: { $regex: searchTerm, $options: 'i' } },
+              { flatCity: { $regex: searchTerm, $options: 'i' } },
+              { flatStreet1: { $regex: searchTerm, $options: 'i' } },
+              { flatStreet2: { $regex: searchTerm, $options: 'i' } },
+            ],
+          }
+        : {}),
+      isListed: true,
+    });
+
+    const listingIDs = [...new Set(listings.flatMap((res) => res.id))];
+
+    // find listing costs for listings
+    const listingCosts =
+      await this.listingCostService.getListingCostsDataByListingIds(listingIDs);
+
+    const listingsWithCost = listings.map((listing) => {
+      const costs = listingCosts
+        .find((l) => l.listingID.toString() === listing._id.toString())
+        ?.toJSON();
+      return { ...listing.toJSON(), costs };
+    });
+
+    return listingsWithCost;
   }
 }
