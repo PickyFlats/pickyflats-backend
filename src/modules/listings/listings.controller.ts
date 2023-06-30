@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   Res,
   UseGuards,
@@ -29,8 +30,8 @@ export class ListingsController {
       const listings = await this.listingsService.getListings();
       return response.json(listings);
     } catch (err) {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: 401,
+      return response.status(err.status).json({
+        statusCode: err.status,
         message: err.message,
       });
     }
@@ -47,14 +48,29 @@ export class ListingsController {
     return response.json(listings);
   }
 
+  // search
+
+  @Get('/search')
+  async searchListings(@Res() response, @Query() query: any) {
+    try {
+      const listings = await this.listingsService.getListingsByQuery(query);
+      return response.json(listings);
+    } catch (err) {
+      return response.status(err.status).json({
+        statusCode: err.status,
+        message: err.message,
+      });
+    }
+  }
+
   @Get(['/:listingID'])
   async getListingById(@Res() response, @Param('listingID') listingID: string) {
     try {
       const listing = await this.listingsService.getListingById(listingID);
       return response.json(listing);
     } catch (err) {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: 401,
+      return response.status(err.status).json({
+        statusCode: err.status,
         message: err.message,
       });
     }
@@ -75,8 +91,8 @@ export class ListingsController {
       });
       return response.json({ id: newListing.id });
     } catch (err) {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: 401,
+      return response.status(err.status).json({
+        statusCode: err.status,
         message: err.message,
       });
     }
@@ -96,8 +112,8 @@ export class ListingsController {
       await this.listingsService.updateListingById(listingID, listingDto);
       response.end();
     } catch (err) {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: 401,
+      return response.status(err.status).json({
+        statusCode: err.status,
         message: err.message,
       });
     }
@@ -110,8 +126,8 @@ export class ListingsController {
       await this.listingsService.deleteListingById(listingID);
       response.end();
     } catch (err) {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: 401,
+      return response.status(err.status).json({
+        statusCode: err.status,
         message: err.message,
       });
     }
