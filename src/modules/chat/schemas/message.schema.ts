@@ -9,17 +9,17 @@ export type MessageDocument = HydratedDocument<Message>;
   toJSON: {
     transform: (doc, ret) => {
       ret.$id = ret._id;
-      ret.$createdAt = ret.createdAt;
+      
       delete ret._id;
-      delete ret.createdAt;
+      
     },
   },
   toObject: {
     transform: (doc, ret) => {
       ret.$id = ret._id;
-      ret.$createdAt = ret.createdAt;
+      
       delete ret._id;
-      delete ret.createdAt;
+      
     },
   },
 })
