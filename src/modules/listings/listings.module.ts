@@ -21,5 +21,6 @@ import {
   ],
   providers: [ListingsService],
   controllers: [ListingsController],
+  exports: [ListingsService],
 })
 export class ListingsModule {}

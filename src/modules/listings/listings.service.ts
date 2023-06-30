@@ -53,7 +53,18 @@ export class ListingsService {
     return listingsWithCost;
   }
 
+  async getListingsByIds(ids: string[]) {
+    const listings = await this.listingsModel.find({
+      isListed: true,
+      _id: { $in: ids.map((id) => new Types.ObjectId(id)) },
+    });
+    return listings;
+  }
+
   async getListingsByUserId(userId) {
+    return this.listingsModel.find({ listedBy: new Types.ObjectId(userId) });
+  }
+  async getListingsWithCostByUserId(userId) {
     // return this.listingsModel.find({ listedBy: userId });
     return this.listingsModel.aggregate([
       {

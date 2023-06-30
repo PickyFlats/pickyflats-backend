@@ -7,15 +7,15 @@ import { Document, Types } from 'mongoose';
   toJSON: {
     transform: (doc, ret) => {
       ret.$id = ret._id;
-      ret.$createdAt = ret.createdAt;
-      delete ret.createdAt;
+      
+      
     },
   },
   toObject: {
     transform: (doc, ret) => {
       ret.$id = ret._id;
-      ret.$createdAt = ret.createdAt;
-      delete ret.createdAt;
+      
+      
     },
   },
 })
